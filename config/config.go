@@ -35,6 +35,7 @@ type Config struct {
 	LogMaxSize      int
 	LogMaxBackups   int
 	LogMaxAge       int
+	LogFile         string
 	DbHost          string
 	DbUser          string
 	DbPwd           string
@@ -57,17 +58,18 @@ type Config struct {
 var DefaultConfig = Config{
 	ConfigFile:        "./dameng_exporter.config",
 	CustomMetricsFile: "./custom_metrics.toml",
-	ListenAddress:     ":9200",
+	ListenAddress:     ":9161",
 	MetricPath:        "/metrics",
 	//QueryTimeout:    30 * time.Second,
-	QueryTimeout:            30, //秒
-	MaxIdleConns:            1,  //个数
-	MaxOpenConns:            10, //个数
-	ConnMaxLifetime:         30, //分钟
-	LogMaxSize:              10, //MB
-	LogMaxBackups:           3,  //个数
-	LogMaxAge:               30, //天
-	BigKeyDataCacheTime:     60, //分
+	QueryTimeout:            30,                         //秒
+	MaxIdleConns:            1,                          //个数
+	MaxOpenConns:            10,                         //个数
+	ConnMaxLifetime:         30,                         //分钟
+	LogMaxSize:              10,                         //MB
+	LogMaxBackups:           3,                          //个数
+	LogMaxAge:               30,                         //天
+	LogFile:                 "logs/dameng_exporter.log", //天
+	BigKeyDataCacheTime:     60,                         //分
 	AlarmKeyCacheTime:       60,
 	RegisterHostMetrics:     true,
 	RegisterDatabaseMetrics: true,
@@ -107,6 +109,8 @@ func LoadConfig(filePath string) (Config, error) {
 			config.ConfigFile = value
 		case "customMetricsFile":
 			config.CustomMetricsFile = value
+		case "logFile":
+			config.LogFile = value
 		case "listenAddress":
 			config.ListenAddress = value
 		case "metricPath":

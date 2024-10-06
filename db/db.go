@@ -6,11 +6,11 @@ import (
 	"dameng_exporter/logger"
 	"database/sql"
 	"fmt"
+	// go官方驱动不支持macos版本，mac下需指定GOOS后编译
+	_ "github.com/gaoyuan98/dm"
 	"go.uber.org/zap"
 	"log"
 	"time"
-
-	_ "github.com/gaoyuan98/dm"
 )
 
 var (

@@ -63,18 +63,34 @@ dameng_exporter_v1.0.0_linux_arm64.tar.gz（linux_arm平台）
 dameng_exporter_v1.0.0_windows_amd64.tar.gz（window_x64平台）
 ```
 
+
+
 ## 2. 新建用户权限
+
 ```sql
-## 最小化权限
-## 条件允许的话 最好赋予DBA权限
 create tablespace "PROMETHEUS.DBF" datafile 'PROMETHEUS.DBF' size 512 CACHE = NORMAL;
 create user "PROMETHEUS" identified by "PROMETHEUS";
 alter user "PROMETHEUS" default tablespace "PROMETHEUS.DBF" default index tablespace "PROMETHEUS.DBF";
+```
+
+```sql
+## 最小化权限
 grant "PUBLIC","RESOURCE","SOI","SVI","VTI" to "PROMETHEUS";
-grant select on DBA_FREE_SPACE to PROMETHEUS;
-grant select on DBA_DATA_FILES to PROMETHEUS;
-grant select on DBA_USERS to PROMETHEUS;
-grant select on V$SESSIONS to PROMETHEUS;
+GRANT SELECT ON DBA_FREE_SPACE TO PROMETHEUS;
+GRANT SELECT ON DBA_DATA_FILES TO PROMETHEUS;
+GRANT SELECT ON DBA_USERS TO PROMETHEUS;
+GRANT SELECT ON V$SESSIONS TO PROMETHEUS;
+GRANT SELECT ON V$INSTANCE TO PROMETHEUS;
+GRANT SELECT ON SYSJOB.SYSSTEPHISTORIES2 TO PROMETHEUS;
+GRANT SELECT ON SYSJOB.SYSJOBHISTORIES2 TO PROMETHEUS;
+GRANT SELECT ON SYSJOB.SYSJOBSCHEDULES TO PROMETHEUS;
+GRANT SELECT ON SYSJOB.SYSJOBSTEPS TO PROMETHEUS;
+GRANT SELECT ON SYSJOB.SYSJOBS TO PROMETHEUS;
+```
+
+```sql
+## 条件允许的话 最好赋予DBA权限
+GRANT DBA TO "PROMETHEUS";
 ```
 ## 3. 在数据库上运行
 1. 解压压缩包
@@ -83,10 +99,10 @@ grant select on V$SESSIONS to PROMETHEUS;
 3. 启动exporter程序
 ```
 ## 启动服务
-[root@VM-24-17-centos dm_prometheus]#  nohup  ./dameng_exporter_v1.0.0_linux_amd64 > /dev/null 2>&1 &
+[root@VM-24-17-centos dm_prometheus]#  nohup  ./dameng_exporter_v2.0.0_linux_amd64 --configFile=dameng_exporter.conf > /dev/null 2>&1 &
 ## 2. 访问接口
 ##  通过浏览器访问http://被监控端IP:9200/metrics
-[root@server ~]# lsof -i:9200
+[root@server ~]# lsof -i:9161
 ```
 ## 4. 在prometheus上进行配置
 修改prometheus的prometheus.yml配置文件
@@ -175,6 +191,14 @@ dmdbms_test_table_metrics_total_size_mb{host_name="gy",name="TEMP"} 74
 ```
 
 # 更新记录
+## v2.0.0
+[新增] 提供自定义配置文件参数\
+[优化] 修复特殊字符作为密码时无法正常被识别\
+[错误] 修复慢查询数据溢出问题\
+[更改] 将默认端口设置为9161\
+[优化] 提供日志路径配置\
+[优化] 默认控制台日志输出级别为INFO，单文件50M,保留最近3份，保留最近28天
+
 ## v1.0.4
 1. 修复自定义SQL指标时，多条数据报lable重复的问题
 2. 将依赖的go驱动调整为v1.3.162版本
