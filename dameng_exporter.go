@@ -18,20 +18,7 @@ import (
 	"strconv"
 )
 
-/*var (
-	registerHostMetrics     bool = true //主机类的数据库指标 例如进程是否存活
-	registerDatabaseMetrics bool = true
-	registerDmhsMetrics     bool = true //DMHS的相关指标
-)
-*/
-/*if registerHostMetrics || registerDatabaseMetrics || registerMiddlewareMetrics {
-// 注册自定义指标
-collector.RegisterCollectors(registerHostMetrics, registerDatabaseMetrics, registerMiddlewareMetrics)
-} else {
-// 卸载所有注册器
-collector.UnregisterCollectors()
-}
-*/
+var Version string
 
 func main() {
 
@@ -72,11 +59,17 @@ func main() {
 
 		encryptPwd      = kingpin.Flag("encryptPwd", "Password to encrypt and exit").Default("").String()
 		encodeConfigPwd = kingpin.Flag("encodeConfigPwd", "Encode the password in the config file,default:"+strconv.FormatBool(config.DefaultConfig.EncodeConfigPwd)).Default(strconv.FormatBool(config.DefaultConfig.EncodeConfigPwd)).Bool()
-		Version         = "1.0.2"
+		version         = kingpin.Flag("version", "Show version").Default("false").Bool()
 		landingPage     = []byte("<html><head><title>DAMENG DB Exporter " + Version + "</title></head><body><h1>DAMENG DB Exporter " + Version + "</h1><p><a href='/metrics'>Metrics</a></p></body></html>")
 	)
 	kingpin.Parse()
 
+	if version != nil && *version {
+		fmt.Println("Version: ", Version)
+		fmt.Println("Github: github.com/itjustnathan/dameng_exporter")
+		fmt.Println("Forked from gaoyuan98/dameng_exporter")
+		return
+	}
 	//加密密码口令返回
 	if execEncryptPwdCmd(encryptPwd) {
 		return
@@ -129,7 +122,7 @@ func main() {
 
 	//注册指标
 	collector.RegisterCollectors(reg)
-	logger.Logger.Info("Starting dameng_exporter version " + Version)
+	logger.Logger.Info("Starting dameng_exporter version :" + Version)
 	logger.Logger.Info("Please visit: http://localhost" + config.GlobalConfig.ListenAddress + config.GlobalConfig.MetricPath)
 	//设置metric路径
 	http.Handle(config.GlobalConfig.MetricPath, promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))

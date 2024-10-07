@@ -13,7 +13,7 @@ fi
 # 编译 Linux 64 位版本
 export GOOS=linux
 export GOARCH=amd64
-go build -ldflags "-s -w" -o ${PROGRAM_NAME}_${VERSION}_linux_amd64
+go build -ldflags "-s -w -X main.Version=${VERSION}" -o ${PROGRAM_NAME}_${VERSION}_linux_amd64
 if [ $? -ne 0 ]; then
     echo "Error compiling Linux 64-bit version"
     sleep 3
@@ -36,7 +36,7 @@ rm -f ${PROGRAM_NAME}_${VERSION}_linux_amd64
 # 编译 Linux ARM 版本
 export GOOS=linux
 export GOARCH=arm64
-go build -ldflags "-s -w" -o ${PROGRAM_NAME}_${VERSION}_linux_arm64
+go build -ldflags "-s -w -X main.Version=${VERSION}" -o ${PROGRAM_NAME}_${VERSION}_linux_arm64
 if [ $? -ne 0 ]; then
     echo "Error compiling Linux ARM version"
     sleep 3

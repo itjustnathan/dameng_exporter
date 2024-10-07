@@ -1,0 +1,27 @@
+# 配置 1：数据库表空间监控指标
+[[metric]]
+context = "tablespace_metrics"
+labels = ["tablespace_name"]
+request = """
+SELECT
+    tablespace_name,
+    ROUND(SUM(bytes)/1024/1024, 2) AS total_size_mb,
+    ROUND(SUM(maxbytes)/1024/1024, 2) AS max_size_mb,
+    ROUND((SUM(bytes)/SUM(maxbytes))*100, 2) AS usage_percent
+FROM
+    DBA_DATA_FILES
+GROUP BY
+    tablespace_name
+"""
+
+# 指标描述信息
+[metric.metricsdesc]
+total_size_mb = "Total size of the tablespace in MB"
+max_size_mb = "Maximum size of the tablespace in MB"
+usage_percent = "Percentage usage of the tablespace"
+
+# 指标类型定义
+[metric.metricstype]
+total_size_mb = "gauge"
+max_size_mb = "gauge"
+usage_percent = "gauge"

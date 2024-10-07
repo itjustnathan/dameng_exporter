@@ -82,6 +82,7 @@ func (cm *CustomMetrics) Collect(ch chan<- prometheus.Metric) {
 
 	// 遍历配置中的每个 Metric，执行查询并收集数据
 	for _, metric := range cm.sqlConfig.Metrics {
+		logger.Logger.Infoln("collect custom metric: ", metric.Context)
 		results, err := queryDynamicDatabase(ctx, cm.db, metric.Request)
 		if err != nil {
 			logger.Logger.Error("查询数据库错误", zap.Error(err))
